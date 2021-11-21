@@ -1,0 +1,4 @@
+name = "TowerOfHanoi"
+uuid = "6a97d50a-75bd-41c1-a5a5-4807027c1e39"
+authors = ["Blaine Buxton <btbuxton@gmail.com>"]
+version = "0.1.0"
