@@ -27,7 +27,7 @@ Base.hash(a::Rod,h::UInt) = hash(a.discs,h)
 
 function show_line(rod::Rod, max::Integer, depth::Integer)
     disc = get(rod.discs, depth, nothing)
-    if disc == nothing
+    if disc === nothing
         repeat(" ", max)
     else    
         show_line(disc, max, depth)
@@ -91,18 +91,20 @@ end
 
 abstract type MoveState end
 struct Valid <: MoveState end
-struct Invalid <: MoveState end
+struct Invalid <: MoveState 
+    msg::String 
+end
 struct Possible <: MoveState end
 
 struct Move{T}
     tower::Tower
     from::Integer
     to::Integer
-    msg::String # less than ideal - only for invalid
+    state::T
     
-    Move{Valid}(move::Move{Possible}) = new{Valid}(move.tower, move.from, move.to, "") # yuck
-    Move{Invalid}(move::Move{Possible}, msg::String) = new{Invalid}(move.tower,move.from,move.to,msg)
-    Move{Possible}(tower::Tower, from::Integer, to::Integer) = new{Possible}(tower,from,to,"")
+    Move{Valid}(move::Move{Possible}) = new{Valid}(move.tower, move.from, move.to)
+    Move{Invalid}(move::Move{Possible}, msg::String) = new{Invalid}(move.tower,move.from,move.to,Invalid(msg))
+    Move{Possible}(tower::Tower, from::Integer, to::Integer) = new{Possible}(tower,from,to)
     Move(tower::Tower, from::Integer, to::Integer) = Move{Possible}(tower,from,to)
 end
 
@@ -111,7 +113,7 @@ function (move::Move{Possible})()
 end
 
 function (move::Move{Invalid})()
-    throw(InvalidMoveException(move.msg))
+    throw(InvalidMoveException(move.state.msg))
 end
 
 function (move::Move{Valid})()
@@ -135,9 +137,9 @@ function check(move::Move{Possible})
     end
 end
 
-if_valid_do(func::Function, move::Move{Valid}) = func(move)
-if_valid_do(func::Function, move::Move{Invalid}) = nothing
-if_valid_do(func::Function, move::Move{Possible}) = if_valid_do(func, check(move))
+if_valid(func::Function, move::Move{Valid}) = func(move)
+if_valid(func::Function, move::Move{Invalid}) = nothing
+if_valid(func::Function, move::Move{Possible}) = if_valid(func, check(move))
 
 function for_each_valid_move(func::Function, tower::Tower)
     for from_index in range(1, length=3)
@@ -146,7 +148,7 @@ function for_each_valid_move(func::Function, tower::Tower)
                 continue
             end
             move = Move(tower, from_index, to_index)
-            if_valid_do(func, move)
+            if_valid(func, move)
         end
     end
 end

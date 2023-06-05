@@ -1,3 +1,4 @@
 {
-    "julia.environmentPath": "/home/btbuxton/Documents/julia/TowerOfHanoi"
+    "editor.formatOnSave": true,
+    "python.terminal.activateEnvironment": false,
 }
