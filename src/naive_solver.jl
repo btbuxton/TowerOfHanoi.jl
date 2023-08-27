@@ -47,13 +47,14 @@ function main()
     initial = Tower(4,1)
     final = Tower(4,2)
     moves = naive_solve(initial, final) # TODO make end_state => end_states
-    println(length(moves))
+    println("Moves to solve: $(length(moves))")
     for each in moves
         show(each.tower)
         heuristic_value = heuristic(initial, each.tower)
         println("heurstic value: $heuristic_value")
         println("Move from $(each.from) to $(each.to)")
     end
+    println("final:")
     show(last(moves)())
 end
 

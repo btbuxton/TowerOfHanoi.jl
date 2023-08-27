@@ -48,7 +48,7 @@ function main()
     initial = Tower(4, 1)
     final = Tower(4, 2)
     moves = heuristic_solve(initial, final) # TODO make end_state => end_states
-    println("Number of moves: ", length(moves))
+    println("Moves to solve: $(length(moves))")
     for each in moves
         show(each.tower)
         heuristic_value = heuristic(initial, each.tower)
